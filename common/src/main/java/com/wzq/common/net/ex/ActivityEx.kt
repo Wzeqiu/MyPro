@@ -3,13 +3,11 @@ package com.wzq.common.net.ex
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.lifecycleScope
 import com.lxj.xpopup.XPopup
+import com.wzq.common.net.ApiException
 import com.wzq.common.net.BaseResponse
-import com.wzq.common.net.Failure
-import com.wzq.common.net.Success
+import com.wzq.common.utils.showToast
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 /**
@@ -35,10 +33,11 @@ fun <DATA : Any> FragmentActivity.request(
             }
         }
         when (it) {
-            is Success<*> -> {
-                success.invoke(it.data as DATA)
+            is Success -> {
+                success.invoke(it.data)
             }
             is Failure -> {
+                showToast(it.message)
                 error.invoke(it.code, it.message)
             }
         }
@@ -46,19 +45,21 @@ fun <DATA : Any> FragmentActivity.request(
 }
 
 
-fun <DATA : Any> FragmentActivity.request(
+fun <DATA : Any> FragmentActivity.requestFlow(
     block: suspend () -> BaseResponse<DATA>,
-    error: (code: Int, message: String) -> Unit = { _: Int, _: String -> },
-    success: (DATA) -> Unit = {}
+    success: (MutableStateFlow<DATA>)
 ) {
     lifecycleScope.launch {
         flow {
             val data = block.invoke()
-            emit(data.data)
-        }.onStart {
-
+            emit(data)
+        }.map {
+            if (it.isSuccess) it.data else throw ApiException(it.code, it.message)
         }.flowOn(Dispatchers.IO)
-
+            .catch {
+            }.collect {
+                success.value = it
+            }
     }
 
 }

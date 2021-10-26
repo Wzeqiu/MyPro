@@ -1,11 +1,18 @@
 package com.wzq.mypro
 
-import androidx.appcompat.app.AppCompatActivity
-import android.os.Bundle
+import com.wzq.common.base.BaseVbVmActivity
+import com.wzq.mypro.databinding.ActivityTwoBinding
 
-class TwoActivity : AppCompatActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_two)
+class TwoActivity : BaseVbVmActivity<ActivityTwoBinding, MainViewModel>() {
+
+    override fun createViewBinding(): ActivityTwoBinding {
+        return ActivityTwoBinding.inflate(layoutInflater)
+    }
+
+    override fun initData() {
+    }
+
+    override fun createViewModel(): Class<MainViewModel> {
+        return MainViewModel::class.java
     }
 }

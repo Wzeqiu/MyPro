@@ -20,7 +20,7 @@ abstract class BaseVBAdapter<VB : ViewBinding> : RecyclerView.Adapter<RecyclerVi
     /**
      * 创建ViewBinding
      */
-    protected abstract fun createViewBinding(): VB
+    protected abstract fun createViewBinding(parent: ViewGroup,viewType: Int): VB
 
     /**
      * 绑定数据
@@ -28,7 +28,7 @@ abstract class BaseVBAdapter<VB : ViewBinding> : RecyclerView.Adapter<RecyclerVi
     protected abstract fun onBindData(viewBinding: ViewBinding, position: Int)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        _viewBinding = createViewBinding()
+        _viewBinding = createViewBinding(parent,viewType)
         val viewHolder = object : RecyclerView.ViewHolder(viewBinding.root) {}
         bindViewClick(viewHolder)
         return viewHolder

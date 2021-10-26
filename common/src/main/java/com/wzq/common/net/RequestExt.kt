@@ -100,27 +100,4 @@ fun <DATA : Any> Fragment.request(
 }
 
 
-fun <DATA : Any> LifecycleOwner.request(
-    block: suspend () -> BaseResponse<DATA>,
-    result: (Result) -> Unit = {}
-) {
-    lifecycleScope.launch {
-        runCatching {
-            block.invoke()
-        }.mapCatching {
-            if (it.isSuccess) it.data else throw ApiException(it.code, it.message)
-        }.onSuccess {
-            withContext(Dispatchers.Main) {
-                result.invoke(Success(it))
-            }
-        }.onFailure {
-            requestError(it, error = { code: Int, message: String ->
-                withContext(Dispatchers.Main) {
-                    result.invoke(Failure(code, message))
-                }
-            })
-        }
-    }
-}
-
 

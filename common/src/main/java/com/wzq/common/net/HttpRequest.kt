@@ -51,6 +51,9 @@ class HttpRequest private constructor() {
             throw RuntimeException("HttpRequest Builder Cannot be null")
         }
         this.builder = builder
+        this.builder.interceptors += HttpLoggingInterceptor().apply {
+            level = if (builder.debug) HttpLoggingInterceptor.Level.BODY else HttpLoggingInterceptor.Level.NONE
+        }
     }
 
 
@@ -71,9 +74,6 @@ class HttpRequest private constructor() {
         builder.interceptors.forEach {
             okBuilder.addInterceptor(it)
         }
-        okBuilder.addInterceptor(HttpLoggingInterceptor().apply {
-            level = if (builder.debug) HttpLoggingInterceptor.Level.BODY else HttpLoggingInterceptor.Level.NONE
-        })
         okBuilder.sslSocketFactory(getSocketFactory(), trustManager)
         okBuilder.hostnameVerifier { _, _ -> true }
         return okBuilder.build()
@@ -103,7 +103,7 @@ class HttpRequest private constructor() {
         internal var baseUrl = ""
 
         /**
-         * 请求地址公共部分
+         * debug
          */
         internal var debug = true
 

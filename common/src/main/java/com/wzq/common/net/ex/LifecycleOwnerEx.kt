@@ -14,9 +14,9 @@ import kotlinx.coroutines.withContext
  * Version: 1.0
  * Description: java类作用描述
  */
-fun <DATA : Any> LifecycleOwner.requestResult(
+internal fun <DATA : Any> LifecycleOwner.requestResult(
     block: suspend () -> BaseResponse<DATA>,
-    result: (Result<Any>) -> Unit = {}
+    result: (Result<DATA>) -> Unit = {}
 ) {
     lifecycleScope.launch {
         runCatching {
