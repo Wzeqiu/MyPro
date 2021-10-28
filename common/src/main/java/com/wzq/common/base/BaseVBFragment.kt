@@ -14,12 +14,11 @@ import androidx.viewbinding.ViewBinding
  * Version: 1.0
  * Description: java类作用描述
  */
-abstract class BaseVBFragment<VB : ViewBinding> : Fragment(), InitListener<VB> {
-    private lateinit var _viewBinding: VB
-    protected val viewBinding get() = _viewBinding
+abstract class BaseVBFragment<VB : ViewBinding>(private val inflate: (inflater: LayoutInflater, container: ViewGroup?, attachToRoot: Boolean) -> VB) :
+    Fragment() {
+    protected lateinit var viewBinding: VB
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        _viewBinding = createViewBinding()
-        initData()
+        viewBinding = inflate(inflater, container, false)
         return viewBinding.root
     }
 }

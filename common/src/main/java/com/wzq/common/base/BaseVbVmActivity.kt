@@ -1,6 +1,8 @@
 package com.wzq.common.base
 
 import android.os.Bundle
+import android.view.LayoutInflater
+import androidx.annotation.CallSuper
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewbinding.ViewBinding
@@ -12,18 +14,18 @@ import androidx.viewbinding.ViewBinding
  * Version: 1.0
  * Description: java类作用描述
  */
-internal abstract class BaseVbVmActivity<VB : ViewBinding, VM : ViewModel> : BaseVBActivity<VB>() {
+abstract class BaseVbVmActivity<VB : ViewBinding, VM : ViewModel>(
+    inflate: (inflate: LayoutInflater) -> VB,
+    private val vmClass: Class<VM>
+) : BaseVBActivity<VB>(inflate) {
 
-    private lateinit var _viewModel: VM
-    protected val viewModel get() = _viewModel
+    protected lateinit var viewModel: VM
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        _viewModel = ViewModelProvider(this).get(createViewModel())
+        viewModel = ViewModelProvider(this).get(vmClass)
         super.onCreate(savedInstanceState)
+
     }
-
-    abstract fun createViewModel(): Class<VM>
-
 
 }
 

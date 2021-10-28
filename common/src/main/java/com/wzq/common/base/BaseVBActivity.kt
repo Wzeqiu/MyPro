@@ -1,6 +1,8 @@
 package com.wzq.common.base
 
 import android.os.Bundle
+import android.view.LayoutInflater
+import androidx.annotation.CallSuper
 import androidx.appcompat.app.AppCompatActivity
 import androidx.viewbinding.ViewBinding
 import com.wzq.common.utils.ActivityStackManager
@@ -12,14 +14,12 @@ import com.wzq.common.utils.ActivityStackManager
  * Version: 1.0
  * Description: java类作用描述
  */
-abstract class BaseVBActivity<VB : ViewBinding> : AppCompatActivity(), InitListener<VB> {
-    private lateinit var _viewBinding: VB
-    protected val viewBinding get() = _viewBinding
+abstract class BaseVBActivity<VB : ViewBinding>(private val inflate: (inflate: LayoutInflater) -> VB) : AppCompatActivity() {
+    protected lateinit var viewBinding: VB
     override fun onCreate(savedInstanceState: Bundle?) {
         ActivityStackManager.getInstance().onActivityCreated(this)
         super.onCreate(savedInstanceState)
-        _viewBinding = createViewBinding()
-        initData()
+        viewBinding = inflate(layoutInflater)
         setContentView(viewBinding.root)
     }
 

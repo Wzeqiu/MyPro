@@ -1,9 +1,11 @@
 package com.wzq.common.base
 
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
+import com.wzq.common.R
 
 /**
  *
@@ -12,30 +14,32 @@ import androidx.viewbinding.ViewBinding
  * Version: 1.0
  * Description: java类作用描述
  */
-abstract class BaseVBAdapter<VB : ViewBinding> : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-    private lateinit var _viewBinding: VB
-    protected val viewBinding get() = _viewBinding
+abstract class BaseVBAdapter<DATA, VB : ViewBinding>(
+    private val datas: MutableList<DATA>,
+    private val inflate: (inflater: LayoutInflater, container: ViewGroup?, attachToRoot: Boolean) -> VB
+) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private var itemOnClickListener: ItemOnClickListener? = null
-
-    /**
-     * 创建ViewBinding
-     */
-    protected abstract fun createViewBinding(parent: ViewGroup,viewType: Int): VB
 
     /**
      * 绑定数据
      */
-    protected abstract fun onBindData(viewBinding: ViewBinding, position: Int)
+    protected abstract fun onBindData(viewBinding: VB, data: DATA, position: Int)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        _viewBinding = createViewBinding(parent,viewType)
+        val viewBinding: VB = inflate(LayoutInflater.from(parent.context), parent, false)
         val viewHolder = object : RecyclerView.ViewHolder(viewBinding.root) {}
+        viewHolder.itemView.setTag(R.id.recyclerview_item_tag_id, viewBinding)
         bindViewClick(viewHolder)
         return viewHolder
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        onBindData(viewBinding, position)
+        val viewBinding = holder.itemView.getTag(R.id.recyclerview_item_tag_id)
+        onBindData(viewBinding as VB, datas[position]!!, position)
+    }
+
+    override fun getItemCount(): Int {
+        return datas.size
     }
 
     /**
