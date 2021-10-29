@@ -1,6 +1,5 @@
 package com.wzq.common.net
 
-import android.util.Log
 import com.google.gson.JsonParseException
 import org.apache.http.conn.ConnectTimeoutException
 import org.json.JSONException
@@ -16,51 +15,37 @@ import java.net.UnknownHostException
  * Description: java类作用描述
  */
 
+private val httpCode = mutableMapOf(
+    Pair(204, "请求被受理但没有资源可以返回"),
+    Pair(400, "请求报文语法有误，服务器无法识别"),
+    Pair(401, "请求需要认证"),
+    Pair(403, "请求的对应资源禁止被访问"),
+    Pair(404, "服务器无法找到对应资源"),
+    Pair(500, "服务器内部错误"),
+    Pair(503, "服务器正忙"),
 
-const val UNAUTHORIZED = 401
-const val FORBIDDEN = 403
-const val NOT_FOUND = 404
-const val REQUEST_TIMEOUT = 408
-const val INTERNAL_SERVER_ERROR = 500
-const val BAD_GATEWAY = 502
-const val SERVICE_UNAVAILABLE = 503
-const val GATEWAY_TIMEOUT = 504
+    Pair(1000, "请求失败"),
+    Pair(1001, "数据解析错误"),
+    Pair(1002, "网络请求超时,请稍后重试"),
+    Pair(1003, "请求地址错误"),
+    Pair(1004, "参数非法"),
+)
 
-
-inline fun requestError(
-    throwable: Throwable,
-    error: (code: Int, message: String) -> Unit = { _: Int, _: String -> }
-) {
-    val message: String
-    var code = 0
-    if (throwable is HttpException) {
-        code = throwable.code()
-        Log.e("OKhttp", "code is $code")
-        message = when (code) {
-            GATEWAY_TIMEOUT -> "当前网络不可用，请检查网络情况"
-            UNAUTHORIZED,
-            FORBIDDEN,
-            NOT_FOUND,
-            REQUEST_TIMEOUT,
-            INTERNAL_SERVER_ERROR,
-            BAD_GATEWAY,
-            SERVICE_UNAVAILABLE -> "服务器繁忙,请稍后重试"
-            else -> "服务器繁忙,请稍后重试"
-        }
+fun requestError(throwable: Throwable): Pair<Int, String?> {
+    return if (throwable is HttpException) {
+        Pair(throwable.code(), httpCode[throwable.code()])
     } else if (throwable is JsonParseException || throwable is JSONException) {
-        throwable.message?.let { Log.e("error", it) }
-        message = "数据解析错误"
+        Pair(1001, httpCode[1001])
     } else if (throwable is SocketTimeoutException || throwable is ConnectTimeoutException) {
-        message = "网络请求超时,请稍后重试"
+        Pair(1002, httpCode[1002])
     } else if (throwable is UnknownHostException) {
-        message = "当前网络不可用，请检查网络情况"
+        Pair(1003, httpCode[1003])
     } else if (throwable is IllegalArgumentException) {
-        message = throwable.message.toString()
+        Pair(1004, httpCode[1004])
     } else if (throwable is ApiException) {
-        message = throwable.message.toString()
+        throwable.getApiError()
     } else {
-        message = throwable.message.toString()
-//            message = "服务器开小差了";
+        Pair(1000, httpCode[1000])
     }
-    error.invoke(code, message)
+
 }

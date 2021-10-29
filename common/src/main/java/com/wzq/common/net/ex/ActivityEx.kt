@@ -45,7 +45,7 @@ fun <DATA : Any> FragmentActivity.request(
 }
 
 
-fun <DATA : Any> FragmentActivity.requestFlow(
+internal fun <DATA : Any> FragmentActivity.requestFlow(
     block: suspend () -> BaseResponse<DATA>,
     success: (MutableStateFlow<DATA>)
 ) {

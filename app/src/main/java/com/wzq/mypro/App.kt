@@ -14,11 +14,11 @@ import okhttp3.logging.HttpLoggingInterceptor
 class App : Application() {
     override fun onCreate() {
         super.onCreate()
-        HttpRequest.setBuilder(
-            HttpRequest.Builder()
-                .setBaseUrl("")
-                .setDebug(true)
-                .addInterceptor(HttpLoggingInterceptor())
-        )
+
+        HttpRequest.Builder()
+            .setBaseUrl("")
+            .setDebug(true)
+            .build()
+
     }
 }

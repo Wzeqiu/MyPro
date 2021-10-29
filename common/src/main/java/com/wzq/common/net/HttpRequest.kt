@@ -36,7 +36,7 @@ class HttpRequest private constructor() {
          * 设置配置信息
          */
         @JvmStatic
-        fun setBuilder(builder: Builder) {
+        private fun setBuilder(builder: Builder) {
             instance.setBuilderConfig(builder)
         }
     }
@@ -125,6 +125,10 @@ class HttpRequest private constructor() {
         fun setDebug(debug: Boolean): Builder {
             this.debug = debug
             return this
+        }
+
+        fun build() {
+            setBuilder(this)
         }
     }
 

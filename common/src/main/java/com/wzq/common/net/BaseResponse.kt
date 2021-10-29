@@ -7,7 +7,7 @@ package com.wzq.common.net
  * Version: 1.0
  * Description: java类作用描述
  */
- class BaseResponse<DATA>(
+class BaseResponse<DATA>(
     val data: DATA,
     val message: String,
     val code: Int

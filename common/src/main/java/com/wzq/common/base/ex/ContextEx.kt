@@ -16,14 +16,14 @@ import androidx.fragment.app.Fragment
  * Description: java类作用描述
  */
 
-fun <T : Activity> Activity.startActivity(clazz: Class<T>, vararg par: Pair<String, Any>) {
+inline fun <reified T : Activity> Activity.startActivity(clazz: Class<T>, vararg par: Pair<String, Any>) {
     startActivity(Intent(this, clazz).putExtras(bundleOf(*par)))
 }
 
-fun <T : Activity> Fragment.startActivity(clazz: Class<T>, vararg par: Pair<String, Any>) {
+inline fun <reified T : Activity> Fragment.startActivity(clazz: Class<T>, vararg par: Pair<String, Any>) {
     requireContext().startActivity(Intent(requireContext(), clazz).putExtras(bundleOf(*par)))
 }
 
-fun <T : Activity> View.startActivity(clazz: Class<T>, vararg par: Pair<String, Any>) {
+inline fun <reified T : Activity> View.startActivity(clazz: Class<T>, vararg par: Pair<String, Any>) {
     context.startActivity(Intent(context, clazz).putExtras(bundleOf(*par)))
 }

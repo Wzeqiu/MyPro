@@ -1,6 +1,8 @@
 package com.wzq.common.net
 
+import com.wzq.common.net.ex.ServerErrorNotifyInterface
 import java.lang.RuntimeException
+import java.util.*
 
 /**
  *
@@ -9,30 +11,29 @@ import java.lang.RuntimeException
  * Version: 1.0
  * Description: java类作用描述
  */
-class ApiException(resultCode: Int, error: String) : RuntimeException() {
-    private val USER_LOGINOUT = 403 // 用户身份失效
 
-    var errorMessage: String? = null
-    var code = 0
+class ApiException(val code: Int, message: String) : RuntimeException(message) {
 
-    init {
-        getApiExceptionMessage(resultCode, error)
+    private val apiCode = mutableMapOf(
+        Pair(403, "没有登录"),
+    )
+
+    fun getApiError(): Pair<Int, String?> {
+        errorCode(code)
+        return Pair(code, apiCode[code] ?: message)
     }
 
 
     /**
-     * 由于服务器传递过来的错误信息直接给用户看的话，用户未必能够理解
-     * 需要根据错误码对错误信息进行一个转换，在显示给用户
-     *
-     * @param code
-     * @return
+     * 异常状态全局通知
      */
-    private fun getApiExceptionMessage(code: Int, error: String): String? {
-        this.code = code
-        errorMessage = when (code) {
-            USER_LOGINOUT -> "用户不存在"
-            else -> error
+    private fun errorCode(code: Int) {
+        val notify = ServiceLoader.load(ServerErrorNotifyInterface::class.java)
+        val it: Iterator<ServerErrorNotifyInterface> = notify.iterator()
+        while (it.hasNext()) {
+            val service = it.next()
+            service.errorNotify(code)
         }
-        return errorMessage
+
     }
 }
