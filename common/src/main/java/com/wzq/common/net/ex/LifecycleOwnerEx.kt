@@ -28,9 +28,9 @@ internal fun <DATA : Any> LifecycleOwner.requestResult(
                 result.invoke(Success(it))
             }
         }.onFailure {
-            val httpCode = requestError(it)
+            val httpError = requestError(it)
             withContext(Dispatchers.Main) {
-                result.invoke(Failure(httpCode.first, httpCode.second ?: ""))
+                result.invoke(Failure(httpError.first, httpError.second ?: ""))
             }
         }
     }

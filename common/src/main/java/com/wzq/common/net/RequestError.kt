@@ -26,14 +26,14 @@ private val httpCode = mutableMapOf(
 
     Pair(1000, "请求失败"),
     Pair(1001, "数据解析错误"),
-    Pair(1002, "网络请求超时,请稍后重试"),
+    Pair(1002, "请求超时,请稍后重试"),
     Pair(1003, "请求地址错误"),
     Pair(1004, "参数非法"),
 )
 
 fun requestError(throwable: Throwable): Pair<Int, String?> {
     return if (throwable is HttpException) {
-        Pair(throwable.code(), httpCode[throwable.code()])
+        Pair(throwable.code(), httpCode[throwable.code()] ?: throwable.message())
     } else if (throwable is JsonParseException || throwable is JSONException) {
         Pair(1001, httpCode[1001])
     } else if (throwable is SocketTimeoutException || throwable is ConnectTimeoutException) {
@@ -45,7 +45,7 @@ fun requestError(throwable: Throwable): Pair<Int, String?> {
     } else if (throwable is ApiException) {
         throwable.getApiError()
     } else {
-        Pair(1000, httpCode[1000])
+        Pair(1000, throwable.message)
     }
 
 }
