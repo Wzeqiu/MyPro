@@ -1,6 +1,7 @@
 package com.wzq.common.utils
 
 import android.app.Activity
+import android.app.Dialog
 import android.view.View
 import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
@@ -30,4 +31,10 @@ fun View.showToast(content: String) {
 }
 
 fun View.showToast(@StringRes stringId: Int) {
+}
+
+fun Dialog.showToast(content: String) {
+}
+
+fun Dialog.showToast(@StringRes stringId: Int) {
 }

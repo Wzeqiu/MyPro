@@ -1,12 +1,15 @@
 package com.wzq.common.base.ex
 
 import android.app.Activity
+import android.content.Context
+import android.content.ContextWrapper
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.annotation.StringRes
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
 
 /**
  *
@@ -26,4 +29,20 @@ inline fun <reified T : Activity> Fragment.startActivity(clazz: Class<T>, vararg
 
 inline fun <reified T : Activity> View.startActivity(clazz: Class<T>, vararg par: Pair<String, Any>) {
     context.startActivity(Intent(context, clazz).putExtras(bundleOf(*par)))
+}
+
+
+/**
+ * context 转 Activity
+ */
+fun Context.context2Activity(): FragmentActivity? {
+    var context = this
+    while (context is ContextWrapper) {
+        context = if (context is FragmentActivity) {
+            return context
+        } else {
+            context.baseContext
+        }
+    }
+    return null
 }

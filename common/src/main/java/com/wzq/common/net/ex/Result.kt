@@ -12,3 +12,5 @@ internal sealed class Result<DATA>
 internal data class Success<DATA>(val data: DATA) : Result<DATA>()
 
 internal data class Failure<Any>(val code: Int, val message: String) : Result<Any>()
+
+internal data class Cancel<Any>(val data: String) : Result<Any>()
