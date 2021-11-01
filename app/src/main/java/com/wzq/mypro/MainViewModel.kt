@@ -2,6 +2,7 @@ package com.wzq.mypro
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.wzq.common.net.ex.request.request
 import kotlinx.coroutines.launch
 
 /**
@@ -14,8 +15,5 @@ import kotlinx.coroutines.launch
 class MainViewModel :ViewModel() {
     init {
 
-        viewModelScope.launch {
-
-        }
     }
 }

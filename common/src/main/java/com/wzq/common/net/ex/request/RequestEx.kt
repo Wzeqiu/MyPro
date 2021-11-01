@@ -1,23 +1,25 @@
 package com.wzq.common.net.ex.request
 
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.lifecycleScope
-import com.wzq.common.net.*
-import com.wzq.common.net.ex.Result
+import android.util.Log
+import com.wzq.common.net.ApiException
+import com.wzq.common.net.BaseResponse
+import com.wzq.common.net.requestError
 import kotlinx.coroutines.*
 
 /**
  *
  * Author: WZQ
- * CreateDate: 2021/10/22 17:31
+ * CreateDate: 2021/10/29 17:32
  * Version: 1.0
  * Description: java类作用描述
  */
-internal fun <DATA : Any> LifecycleOwner.requestResult(
+
+fun <DATA : Any> request(
     block: suspend () -> BaseResponse<DATA>,
-    result: (Result) -> Unit = {}
+    error: (code: Int, message: String) -> Unit = { _: Int, _: String -> },
+    success: (DATA) -> Unit = {}
 ): Job {
-    return lifecycleScope.launch {
+    return GlobalScope.launch(Dispatchers.IO) {
         try {
             runCatching {
                 block.invoke()
@@ -25,17 +27,16 @@ internal fun <DATA : Any> LifecycleOwner.requestResult(
                 if (it.isSuccess) it.data else throw ApiException(it.code, it.message)
             }.onSuccess {
                 withContext(Dispatchers.Main) {
-                    result.invoke(Result.Success(it))
+                    success.invoke(it)
                 }
             }.onFailure {
                 val httpError = requestError(it)
                 withContext(Dispatchers.Main) {
-                    result.invoke(Result.Failure(httpError.first, httpError.second ?: ""))
+                    error.invoke(httpError.first, httpError.second ?: "")
                 }
             }
         } finally {
-            result.invoke(Result.Cancel)
+            Log.e("request", "request cancel")
         }
     }
-
 }

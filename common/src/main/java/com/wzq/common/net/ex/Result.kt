@@ -7,10 +7,12 @@ package com.wzq.common.net.ex
  * Version: 1.0
  * Description: java类作用描述
  */
-internal sealed class Result<DATA>
+internal sealed class Result {
+    internal class Success(val data: Any) : Result()
 
-internal data class Success<DATA>(val data: DATA) : Result<DATA>()
+    internal class Failure(val code: Int, val message: String) : Result()
 
-internal data class Failure<Any>(val code: Int, val message: String) : Result<Any>()
+    internal object Cancel : Result()
+}
 
-internal data class Cancel<Any>(val data: String) : Result<Any>()
+

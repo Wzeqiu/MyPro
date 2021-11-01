@@ -5,10 +5,7 @@ import androidx.lifecycle.lifecycleScope
 import com.lxj.xpopup.XPopup
 import com.wzq.common.net.ApiException
 import com.wzq.common.net.BaseResponse
-import com.wzq.common.net.ex.Cancel
-import com.wzq.common.net.ex.Failure
-import com.wzq.common.net.ex.Success
-import com.wzq.common.net.ex.requestResult
+import com.wzq.common.net.ex.Result
 import com.wzq.common.utils.showToast
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -32,18 +29,21 @@ fun <DATA : Any> FragmentActivity.request(
     val dialog = if (isShowDialog) XPopup.Builder(this).asLoading() else null
     dialog?.show()
     return requestResult(block) {
+        when (it) {
+            is Result.Success -> {
+                success.invoke(it.data as DATA)
+            }
+            is Result.Failure -> {
+                showToast(it.message)
+                error.invoke(it.code, it.message)
+            }
+            is Result.Cancel -> {
+            }
+        }
+
         dialog?.let { dialog ->
             if (dialog.isShow) {
                 dialog.dismiss()
-            }
-        }
-        when (it) {
-            is Success -> {
-                success.invoke(it.data)
-            }
-            is Failure -> {
-                showToast(it.message)
-                error.invoke(it.code, it.message)
             }
         }
     }
