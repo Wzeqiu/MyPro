@@ -1,11 +1,10 @@
-package com.wzq.common.base
+package com.wzq.common.base.adapter
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
-import com.wzq.common.R
 
 /**
  *
@@ -14,33 +13,45 @@ import com.wzq.common.R
  * Version: 1.0
  * Description: java类作用描述
  */
-abstract class BaseVBAdapter<DATA, VB : ViewBinding>(
-    private val datas: MutableList<DATA>,
-    private val inflate: (inflater: LayoutInflater, container: ViewGroup?, attachToRoot: Boolean) -> VB
-) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+
+
+class BaseVBViewHolder<VB : ViewBinding>(val viewBinding: VB) : RecyclerView.ViewHolder(viewBinding.root)
+
+class BaseVBAdapter<DATA, VB : ViewBinding>(
+    private val inflate: (inflater: LayoutInflater, container: ViewGroup?, attachToRoot: Boolean) -> VB,
+    private var viewBinding: VB.(DATA) -> Unit = { }
+) : RecyclerView.Adapter<BaseVBViewHolder<VB>>() {
+    private val datas: MutableList<DATA> = mutableListOf()
     private var itemOnClickListener: ItemOnClickListener? = null
 
-    /**
-     * 绑定数据
-     */
-    protected abstract fun onBindData(viewBinding: VB, data: DATA, position: Int)
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseVBViewHolder<VB> {
         val viewBinding: VB = inflate(LayoutInflater.from(parent.context), parent, false)
-        val viewHolder = object : RecyclerView.ViewHolder(viewBinding.root) {}
-        viewHolder.itemView.setTag(R.id.recyclerview_item_tag_id, viewBinding)
+        val viewHolder = BaseVBViewHolder(viewBinding)
         bindViewClick(viewHolder)
         return viewHolder
     }
 
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        val viewBinding = holder.itemView.getTag(R.id.recyclerview_item_tag_id)
-        onBindData(viewBinding as VB, datas[position]!!, position)
+    override fun onBindViewHolder(holderVB: BaseVBViewHolder<VB>, position: Int) {
+        viewBinding.invoke(holderVB.viewBinding, datas[position]!!)
     }
 
     override fun getItemCount(): Int {
         return datas.size
     }
+
+    fun setDatas(datas: MutableList<DATA>) {
+        this.datas.clear()
+        this.datas.addAll(datas)
+        notifyDataSetChanged()
+    }
+
+    fun addDatas(datas: MutableList<DATA>) {
+        this.datas.addAll(datas)
+        notifyDataSetChanged()
+    }
+
 
     /**
      * 绑定点击事件
@@ -65,8 +76,9 @@ abstract class BaseVBAdapter<DATA, VB : ViewBinding>(
     /**
      * 点击事件接口
      */
-    interface ItemOnClickListener {
+
+    public interface ItemOnClickListener {
         fun onItemClick(adapter: RecyclerView.Adapter<*>, view: View, position: Int)
     }
-
 }
+
