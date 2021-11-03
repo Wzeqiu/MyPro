@@ -20,44 +20,52 @@ class BaseHolder<VB : ViewBinding>(val viewBinding: VB) : BaseViewHolder(viewBin
 
 open class DefaultAdapter<T, VB : ViewBinding>(
     private val inflate: (inflater: LayoutInflater, container: ViewGroup?, attachToRoot: Boolean) -> VB,
-    private var viewBinding: VB.(T) -> Unit = { }
+    private var block: VB.(T) -> Unit = { }
 ) : BaseQuickAdapter<T, BaseHolder<VB>>(0) {
+
+    open fun setItemLayout(block: VB.(T) -> Unit = {}) {
+        this.block = block
+    }
+
     override fun onCreateDefViewHolder(parent: ViewGroup, viewType: Int): BaseHolder<VB> {
         val viewBinding: VB = inflate(LayoutInflater.from(parent.context), parent, false)
         return BaseHolder(viewBinding)
     }
 
+
     override fun convert(holder: BaseHolder<VB>, item: T) {
-        viewBinding.invoke(holder.viewBinding, item)
+        block.invoke(holder.viewBinding, item)
     }
 }
 
+
+class ViewBingPair<T : MultiItemEntity, VB : ViewBinding>(
+    val inflate: (inflater: LayoutInflater, container: ViewGroup?, attachToRoot: Boolean) -> VB,
+    val block: VB.(T) -> Unit = {}
+)
+
 open class DefaultMultiAdapter<T : MultiItemEntity> : BaseMultiItemQuickAdapter<T, BaseHolder<ViewBinding>>() {
+    private var viewBindings: HashMap<Int, ViewBingPair<T, ViewBinding>> = HashMap()
 
-    private val viewBindings: HashMap<Int,
-            Pair<(inflater: LayoutInflater, container: ViewGroup?, attachToRoot: Boolean) -> ViewBinding,
-                    BaseHolder<ViewBinding>.(T) -> Unit>> = HashMap()
-
-    open fun <VB : ViewBinding> addItemType(
+    open fun <VB : ViewBinding> addItemLayout(
         type: Int,
         inflate: (inflater: LayoutInflater, container: ViewGroup?, attachToRoot: Boolean) -> VB,
-        viewBinding: BaseHolder<VB>.(T) -> Unit = {}
+        block: VB.(T) -> Unit = {}
     ) {
         super.addItemType(type, 0)
-        viewBindings[type] = Pair(inflate, viewBinding)
+        viewBindings[type] = ViewBingPair(inflate, block as ViewBinding.(T) -> Unit)
     }
 
     override fun onCreateDefViewHolder(parent: ViewGroup, viewType: Int): BaseHolder<ViewBinding> {
         val pair = viewBindings[viewType]
-        val viewBinding = pair?.first?.invoke(LayoutInflater.from(parent.context), parent, false)
+        val viewBinding = pair?.inflate?.invoke(LayoutInflater.from(parent.context), parent, false)
         return BaseHolder(viewBinding!!)
     }
 
     override fun convert(holder: BaseHolder<ViewBinding>, item: T) {
-        viewBindings[holder.itemViewType]?.second?.invoke(holder, item)
+        viewBindings[holder.itemViewType]?.block?.invoke(holder.viewBinding, item)
     }
-
-
 }
+
 
 
