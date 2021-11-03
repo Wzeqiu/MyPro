@@ -1,10 +1,11 @@
-package com.wzq.common.base
+package com.wzq.common.basemvvm
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewbinding.ViewBinding
+import com.wzq.common.base.BaseVBActivity
 
 /**
  *

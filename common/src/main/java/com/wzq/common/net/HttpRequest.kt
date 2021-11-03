@@ -30,7 +30,9 @@ class HttpRequest private constructor() {
          * 获取 retrofit 实例
          */
         @JvmStatic
-        fun getRetrofit(): Retrofit = instance.retrofit
+        fun getRetrofit(): Retrofit {
+            return instance.retrofit
+        }
 
         /**
          * 设置配置信息
@@ -42,7 +44,7 @@ class HttpRequest private constructor() {
     }
 
 
-    internal val retrofit: Retrofit by lazy { createRetrofit() }
+    internal val retrofit: Retrofit by lazy(LazyThreadSafetyMode.SYNCHRONIZED) { createRetrofit() }
 
     private lateinit var builder: Builder
 
@@ -59,13 +61,13 @@ class HttpRequest private constructor() {
 
     private fun createRetrofit(): Retrofit {
         return Retrofit.Builder()
-            .client(getUnsafeOkHttpClient())
+            .client(getOkHttpClient())
             .addConverterFactory(GsonConverterFactory.create())
             .baseUrl(builder.baseUrl)
             .build()
     }
 
-    private fun getUnsafeOkHttpClient(): OkHttpClient {
+    private fun getOkHttpClient(): OkHttpClient {
         val okBuilder = OkHttpClient.Builder()
         okBuilder.connectTimeout(10, TimeUnit.SECONDS)
         okBuilder.readTimeout(20, TimeUnit.SECONDS)

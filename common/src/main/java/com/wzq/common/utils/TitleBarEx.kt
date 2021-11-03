@@ -1,4 +1,4 @@
-package com.wzq.common.base.ex
+package com.wzq.common.utils
 
 import android.app.Activity
 import android.view.View

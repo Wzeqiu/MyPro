@@ -38,22 +38,32 @@ open class DefaultAdapter<T, VB : ViewBinding>(
     }
 }
 
+/**
+ * 直接初始化
+ */
+fun <T, VB : ViewBinding> initDefaultAdapter(
+    inflate: (inflater: LayoutInflater, container: ViewGroup?, attachToRoot: Boolean) -> VB,
+    block: DefaultAdapter<T, VB>.() -> Unit = { }
+) = DefaultAdapter<T, VB>(inflate).apply {
+    block.invoke(this)
+}
+
 
 class ViewBingPair<T : MultiItemEntity, VB : ViewBinding>(
     val inflate: (inflater: LayoutInflater, container: ViewGroup?, attachToRoot: Boolean) -> VB,
     val block: VB.(T) -> Unit = {}
 )
 
-open class DefaultMultiAdapter<T : MultiItemEntity> : BaseMultiItemQuickAdapter<T, BaseHolder<ViewBinding>>() {
-    private var viewBindings: HashMap<Int, ViewBingPair<T, ViewBinding>> = HashMap()
+open class DefaultMultiAdapter : BaseMultiItemQuickAdapter<MultiItemEntity, BaseHolder<ViewBinding>>() {
+    private var viewBindings: HashMap<Int, ViewBingPair<MultiItemEntity, ViewBinding>> = HashMap()
 
-    open fun <VB : ViewBinding> addItemLayout(
+    open fun <T : MultiItemEntity, VB : ViewBinding> addItemLayout(
         type: Int,
         inflate: (inflater: LayoutInflater, container: ViewGroup?, attachToRoot: Boolean) -> VB,
         block: VB.(T) -> Unit = {}
     ) {
         super.addItemType(type, 0)
-        viewBindings[type] = ViewBingPair(inflate, block as ViewBinding.(T) -> Unit)
+        viewBindings[type] = ViewBingPair(inflate, block as ViewBinding.(Any) -> Unit)
     }
 
     override fun onCreateDefViewHolder(parent: ViewGroup, viewType: Int): BaseHolder<ViewBinding> {
@@ -62,10 +72,21 @@ open class DefaultMultiAdapter<T : MultiItemEntity> : BaseMultiItemQuickAdapter<
         return BaseHolder(viewBinding!!)
     }
 
-    override fun convert(holder: BaseHolder<ViewBinding>, item: T) {
+    override fun convert(holder: BaseHolder<ViewBinding>, item: MultiItemEntity) {
         viewBindings[holder.itemViewType]?.block?.invoke(holder.viewBinding, item)
     }
 }
 
+/**
+ * 直接初始化多布局
+ */
+fun initDefaultMultiAdapter(
+    block: DefaultMultiAdapter.() -> Unit = { }
+) = DefaultMultiAdapter().apply {
+    block.invoke(this)
+}
+
+
+open class MultiItem<DATA>(override val itemType: Int, val data: DATA) : MultiItemEntity
 
 

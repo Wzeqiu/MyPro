@@ -11,6 +11,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MyPro">
         <activity
+            android:name=".mvvm.MvvmActivity"
+            android:exported="false" />
+        <activity
             android:name=".TwoActivity"
             android:exported="true" />
         <activity
