@@ -15,7 +15,7 @@ import java.net.UnknownHostException
  * Description: java类作用描述
  */
 
-private val httpCode = mutableMapOf(
+val httpCode = mutableMapOf(
     Pair(204, "请求被受理但没有资源可以返回"),
     Pair(400, "请求报文语法有误，服务器无法识别"),
     Pair(401, "请求需要认证"),

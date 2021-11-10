@@ -5,7 +5,6 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import java.lang.RuntimeException
 import java.security.SecureRandom
 import java.security.cert.X509Certificate
 import java.util.concurrent.TimeUnit
@@ -24,7 +23,7 @@ class HttpRequest private constructor() {
 
 
     companion object {
-        private val instance: HttpRequest by lazy { HttpRequest() }
+        private val instance by lazy(LazyThreadSafetyMode.SYNCHRONIZED) { HttpRequest() }
 
         /**
          * 获取 retrofit 实例
@@ -32,6 +31,14 @@ class HttpRequest private constructor() {
         @JvmStatic
         fun getRetrofit(): Retrofit {
             return instance.retrofit
+        }
+
+        /**
+         * 获取 具体 实例
+         */
+        @JvmStatic
+        fun <T> createServer(service: Class<T>): T {
+            return getRetrofit().create(service)
         }
 
         /**
@@ -44,13 +51,13 @@ class HttpRequest private constructor() {
     }
 
 
-    internal val retrofit: Retrofit by lazy(LazyThreadSafetyMode.SYNCHRONIZED) { createRetrofit() }
+    internal val retrofit by lazy(LazyThreadSafetyMode.SYNCHRONIZED) { createRetrofit() }
 
     private lateinit var builder: Builder
 
     private fun setBuilderConfig(builder: Builder?) {
         if (builder == null) {
-            throw RuntimeException("HttpRequest Builder Cannot be null")
+            throw RuntimeException("HttpRequest Builder cannot be null")
         }
         this.builder = builder
         this.builder.interceptors += HttpLoggingInterceptor().apply {
@@ -61,21 +68,19 @@ class HttpRequest private constructor() {
 
     private fun createRetrofit(): Retrofit {
         return Retrofit.Builder()
-            .client(getOkHttpClient())
+            .client(createOkHttpClient())
             .addConverterFactory(GsonConverterFactory.create())
             .baseUrl(builder.baseUrl)
             .build()
     }
 
-    private fun getOkHttpClient(): OkHttpClient {
+    private fun createOkHttpClient(): OkHttpClient {
         val okBuilder = OkHttpClient.Builder()
         okBuilder.connectTimeout(10, TimeUnit.SECONDS)
         okBuilder.readTimeout(20, TimeUnit.SECONDS)
         okBuilder.writeTimeout(20, TimeUnit.SECONDS)
         okBuilder.retryOnConnectionFailure(true)
-        builder.interceptors.forEach {
-            okBuilder.addInterceptor(it)
-        }
+        okBuilder.interceptors().addAll(builder.interceptors)
         okBuilder.sslSocketFactory(getSocketFactory(), trustManager)
         okBuilder.hostnameVerifier { _, _ -> true }
         return okBuilder.build()

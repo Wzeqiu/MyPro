@@ -2,7 +2,6 @@ package com.wzq.mypro
 
 import android.app.Application
 import com.wzq.common.net.HttpRequest
-import okhttp3.logging.HttpLoggingInterceptor
 
 /**
  *

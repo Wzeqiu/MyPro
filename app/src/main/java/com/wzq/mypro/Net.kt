@@ -11,7 +11,7 @@ import com.wzq.common.net.HttpRequest
  * Description: java类作用描述
  */
 
-val netServer: Net by lazy { HttpRequest.getRetrofit().create(Net::class.java) }
+val netServer: Net by lazy { HttpRequest.createServer(Net::class.java) }
 
 @JvmSuppressWildcards
 interface Net {
