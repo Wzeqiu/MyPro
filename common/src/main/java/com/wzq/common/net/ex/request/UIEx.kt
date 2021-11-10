@@ -23,17 +23,17 @@ import kotlinx.coroutines.withContext
  * Description: java类作用描述
  */
 
-fun <DATA : Any> FragmentActivity.request(
-    block: suspend () -> BaseResponse<DATA>,
+inline fun <reified DATA> FragmentActivity.request(
+    crossinline block: suspend () -> BaseResponse<DATA>,
     isShowDialog: Boolean = false,
-    error: (code: Int, message: String) -> Unit = { _: Int, _: String -> },
-    success: (DATA) -> Unit = {}
+    crossinline error: (code: Int, message: String) -> Unit = { _: Int, _: String -> },
+    crossinline success: (DATA) -> Unit = {}
 ): Job {
     val dialog = if (isShowDialog) XPopup.Builder(this).asLoading() else null
     dialog?.show()
     return requestResult(block) {
         when (it) {
-            is Result.Success -> {
+            is Result.Success<*> -> {
                 success.invoke(it.data as DATA)
             }
             is Result.Failure -> {
@@ -53,17 +53,17 @@ fun <DATA : Any> FragmentActivity.request(
 }
 
 
-fun <DATA : Any> Fragment.request(
-    block: suspend () -> BaseResponse<DATA>,
+inline fun <reified DATA : Any> Fragment.request(
+    crossinline block: suspend () -> BaseResponse<DATA>,
     isShowDialog: Boolean = false,
-    error: (code: Int, message: String) -> Unit = { _: Int, _: String -> },
-    success: (DATA) -> Unit = {},
-) {
+    crossinline error: (code: Int, message: String) -> Unit = { _: Int, _: String -> },
+    crossinline success: (DATA) -> Unit = {},
+): Job {
     val dialog = if (isShowDialog) XPopup.Builder(requireContext()).asLoading() else null
     dialog?.show()
-    requestResult(block) {
+    return requestResult(block) {
         when (it) {
-            is Result.Success -> {
+            is Result.Success<*> -> {
                 success.invoke(it.data as DATA)
             }
             is Result.Failure -> {
@@ -83,9 +83,9 @@ fun <DATA : Any> Fragment.request(
 }
 
 
-internal fun <DATA : Any> LifecycleOwner.requestResult(
-    block: suspend () -> BaseResponse<DATA>,
-    result: (Result) -> Unit = {}
+inline fun <reified DATA> LifecycleOwner.requestResult(
+    crossinline block: suspend () -> BaseResponse<DATA>,
+    crossinline result: (Result) -> Unit = {}
 ): Job {
     return lifecycleScope.launch {
         try {
@@ -95,7 +95,7 @@ internal fun <DATA : Any> LifecycleOwner.requestResult(
                 if (it.isSuccess) it.data else throw ApiException(it.code, it.message)
             }.onSuccess {
                 withContext(Dispatchers.Main) {
-                    result.invoke(Result.Success(it))
+                    result.invoke(Result.Success<DATA>(it))
                 }
             }.onFailure {
                 val httpError = requestError(it)

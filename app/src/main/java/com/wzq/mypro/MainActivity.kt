@@ -22,9 +22,10 @@ class MainActivity : BaseVBActivity<ActivityMainBinding>(ActivityMainBinding::in
         viewBinding.tvContent.isVisible = true
         viewBinding.tvContent.setSingleOnClickListener {
             request({ netServer.test() }, isShowDialog = true) {
+                startActivity(MvvmActivity::class.java)
             }
 
-            startActivity(MvvmActivity::class.java)
+
         }
 
 
