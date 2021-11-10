@@ -89,7 +89,7 @@ class HttpRequest private constructor() {
     }
 
     //不验证ssl证书
-    private val trustManager: X509TrustManager = object : X509TrustManager {
+    private val trustManager = object : X509TrustManager {
         override fun checkClientTrusted(chain: Array<X509Certificate>, authType: String) {}
         override fun checkServerTrusted(chain: Array<X509Certificate>, authType: String) {}
         override fun getAcceptedIssuers(): Array<X509Certificate?> {

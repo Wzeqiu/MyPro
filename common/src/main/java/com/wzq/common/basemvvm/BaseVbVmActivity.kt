@@ -2,7 +2,6 @@ package com.wzq.common.basemvvm
 
 import android.os.Bundle
 import android.view.LayoutInflater
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewbinding.ViewBinding
 import com.wzq.common.base.BaseVBActivity
@@ -14,15 +13,21 @@ import com.wzq.common.base.BaseVBActivity
  * Version: 1.0
  * Description: java类作用描述
  */
-abstract class BaseVbVmActivity<VB : ViewBinding, VM : ViewModel>(
+abstract class BaseVbVmActivity<VB : ViewBinding, VM : BaseViewModel>(
     inflate: (inflate: LayoutInflater) -> VB,
-    private val vmClass: Class<VM>
+    private val vmClass: Class<VM>? = null
 ) : BaseVBActivity<VB>(inflate) {
 
-    protected lateinit var viewModel: VM
+    protected var viewModel: VM? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        viewModel = ViewModelProvider(this).get(vmClass)
+        viewModel = vmClass?.let {
+            val viewModel = ViewModelProvider(this).get(vmClass)
+            viewModel.context = this
+            viewModel
+        }
+
+
         super.onCreate(savedInstanceState)
 
     }

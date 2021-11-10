@@ -15,7 +15,7 @@ import androidx.viewbinding.ViewBinding
  * Version: 1.0
  * Description: java类作用描述
  */
-class BaseVbVmFragment<VB : ViewBinding, VM : ViewModel>(
+internal class BaseVbVmFragment<VB : ViewBinding, VM : ViewModel>(
     inflate: (inflater: LayoutInflater, container: ViewGroup?, attachToRoot: Boolean) -> VB,
     private val vmClass: Class<VM>
 ) : BaseVBFragment<VB>(inflate) {

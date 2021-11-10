@@ -1,11 +1,13 @@
 package com.wzq.mypro
 
 import android.os.Bundle
+import androidx.core.view.isVisible
 import com.chad.library.adapter.base.entity.MultiItemEntity
 import com.wzq.common.base.BaseVBActivity
 import com.wzq.common.base.adapter.*
 import com.wzq.common.utils.setTitleBarTitle
 import com.wzq.common.net.ex.request.request
+import com.wzq.common.utils.setSingleOnClickListener
 import com.wzq.common.utils.startActivity
 import com.wzq.mypro.databinding.ActivityMainBinding
 import com.wzq.mypro.databinding.ItemAdapterBinding

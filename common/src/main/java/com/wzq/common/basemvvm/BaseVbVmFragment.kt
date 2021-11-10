@@ -22,7 +22,7 @@ class BaseVbVmFragment<VB : ViewBinding, VM : ViewModel>(
 ) : BaseVBFragment<VB>(inflate) {
     protected lateinit var viewModel: VM
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        viewModel = ViewModelProvider(requireActivity()).get(vmClass)
+        viewModel = ViewModelProvider(this).get(vmClass)
         return super.onCreateView(inflater, container, savedInstanceState)
 
     }

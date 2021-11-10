@@ -1,6 +1,6 @@
 package com.wzq.mypro.mvvm
 
-import androidx.lifecycle.ViewModel
+import com.wzq.common.basemvvm.BaseViewModel
 
 /**
  *
@@ -9,5 +9,10 @@ import androidx.lifecycle.ViewModel
  * Version: 1.0
  * Description: java类作用描述
  */
-class MvvmModel :ViewModel() {
+class MvvmModel : BaseViewModel() {
+    val name = "张三"
+
+    init {
+
+    }
 }
