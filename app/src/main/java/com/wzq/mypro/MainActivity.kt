@@ -5,6 +5,7 @@ import androidx.core.view.isVisible
 import com.chad.library.adapter.base.entity.MultiItemEntity
 import com.wzq.common.base.BaseVBActivity
 import com.wzq.common.base.adapter.*
+import com.wzq.common.net.ex.request.cancelRequest
 import com.wzq.common.utils.setTitleBarTitle
 import com.wzq.common.net.ex.request.request
 import com.wzq.common.utils.setSingleOnClickListener
@@ -24,7 +25,6 @@ class MainActivity : BaseVBActivity<ActivityMainBinding>(ActivityMainBinding::in
             request({ netServer.test() }, isShowDialog = true) {
                 startActivity(MvvmActivity::class.java)
             }
-
 
         }
 
