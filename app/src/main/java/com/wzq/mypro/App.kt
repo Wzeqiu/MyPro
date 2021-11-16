@@ -15,7 +15,7 @@ class App : Application() {
         super.onCreate()
 
         HttpRequest.Builder()
-            .setBaseUrl("")
+            .setBaseUrl("https://api.apiopen.top/")
             .setDebug(true)
             .build()
 

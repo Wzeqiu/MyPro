@@ -13,7 +13,8 @@ import com.wzq.common.net.ex.request.request
  * Version: 1.0
  * Description: java类作用描述
  */
-class MyView(context: Context, @Nullable attrs: AttributeSet, defStyleAttr: Int) : View(context, attrs, defStyleAttr) {
+class MyView @JvmOverloads constructor(context: Context, @Nullable attrs: AttributeSet? = null, defStyleAttr: Int = 0) :
+    View(context, attrs, defStyleAttr) {
     init {
         request({ netServer.test() }) {
 

@@ -2,6 +2,7 @@ package com.wzq.mypro
 
 import com.wzq.common.net.BaseResponse
 import com.wzq.common.net.HttpRequest
+import retrofit2.http.GET
 
 /**
  *
@@ -15,5 +16,6 @@ val netServer: Net by lazy { HttpRequest.createServer(Net::class.java) }
 
 @JvmSuppressWildcards
 interface Net {
-    suspend fun test(): BaseResponse<String>
+    @GET("getJoke?page=1&count=2&type=video")
+    suspend fun test(): BaseResponse<List<Any>>
 }

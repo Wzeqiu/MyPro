@@ -8,9 +8,10 @@ package com.wzq.common.net
  * Description: java类作用描述
  */
 class BaseResponse<DATA>(
-    val data: DATA,
+    val result: DATA,
     val message: String,
     val code: Int
 ) {
-    val isSuccess = code == 200
+    fun isSuccess() = code == 200
+
 }

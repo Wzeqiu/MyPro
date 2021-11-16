@@ -2,6 +2,7 @@ package com.wzq.common.net.ex.request
 
 import android.app.Dialog
 import android.content.Context
+import android.util.Log
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
@@ -23,13 +24,13 @@ import kotlinx.coroutines.*
 /**
  * Activity 网络请求
  */
-fun <DATA> FragmentActivity.request(
+fun <DATA : Any> FragmentActivity.request(
     block: suspend () -> BaseResponse<DATA>,
     isShowDialog: Boolean = false,
     error: (code: Int, message: String) -> Unit = { _: Int, _: String -> },
     success: (DATA) -> Unit = {}
 ): Job {
-    return lifecycleResult(this, isShowDialog, block, error, success)
+    return lifecycleRequest(this, isShowDialog, block, error, success)
 }
 
 /**
@@ -41,13 +42,13 @@ fun <DATA : Any> Fragment.request(
     error: (code: Int, message: String) -> Unit = { _: Int, _: String -> },
     success: (DATA) -> Unit = {}
 ): Job {
-    return lifecycleResult(requireContext(), isShowDialog, block, error, success)
+    return lifecycleRequest(requireContext(), isShowDialog, block, error, success)
 }
 
 /**
  * 生命周期控制的网络请求
  */
-fun <DATA> LifecycleOwner.lifecycleResult(
+internal fun <DATA : Any> LifecycleOwner.lifecycleRequest(
     context: Context,
     isShowDialog: Boolean = false,
     block: suspend () -> BaseResponse<DATA>,
@@ -56,23 +57,9 @@ fun <DATA> LifecycleOwner.lifecycleResult(
 ): Job {
     val dialog = if (isShowDialog) XPopup.Builder(context).asLoading() else null
     dialog?.show()
-    return lifecycleScope.launch {
-        when (val result = request(block)) {
-            is RequestResult.Success<*> -> {
-                withContext(Dispatchers.Main) {
-                    success.invoke(result.data as DATA)
-                }
-            }
-            is RequestResult.Failure -> {
-                withContext(Dispatchers.Main) {
-                    error.invoke(result.code, result.message)
-                }
-            }
-            is RequestResult.Cancel -> {
-
-            }
-        }
+    return request(lifecycleScope, block) {
         withContext(Dispatchers.Main) {
+            requestResult(it, error, success)
             dialog?.let { dialog ->
                 if (dialog.isShow) {
                     dialog.dismiss()
@@ -92,7 +79,7 @@ fun <DATA : Any> Dialog.request(
     error: (code: Int, message: String) -> Unit = { _: Int, _: String -> },
     success: (DATA) -> Unit = {}
 ): Job {
-    return cancelRequest(context, isShowDialog, block, error, success)
+    return hasCancelRequest(context, isShowDialog, block, error, success)
 }
 
 /**
@@ -104,13 +91,13 @@ fun <DATA : Any> View.request(
     error: (code: Int, message: String) -> Unit = { _: Int, _: String -> },
     success: (DATA) -> Unit = {}
 ): Job {
-    return cancelRequest(context, isShowDialog, block, error, success)
+    return hasCancelRequest(context, isShowDialog, block, error, success)
 }
 
 /**
  * 可取消 网络请求
  */
-fun <DATA : Any> cancelRequest(
+internal fun <DATA : Any> hasCancelRequest(
     context: Context,
     isShowDialog: Boolean = false,
     block: suspend () -> BaseResponse<DATA>,
@@ -119,28 +106,38 @@ fun <DATA : Any> cancelRequest(
 ): Job {
     val dialog = if (isShowDialog) XPopup.Builder(context).asLoading() else null
     dialog?.show()
-    return GlobalScope.launch(Dispatchers.IO) {
-        when (val result = request(block)) {
-            is RequestResult.Success -> {
-                withContext(Dispatchers.Main) {
-                    success.invoke(result.data)
-                }
-            }
-            is RequestResult.Failure -> {
-                withContext(Dispatchers.Main) {
-                    error.invoke(result.code, result.message)
-                }
-            }
-            is RequestResult.Cancel -> {
-
-            }
-        }
+    return request(GlobalScope, block) {
         withContext(Dispatchers.Main) {
+            requestResult(it, error, success)
             dialog?.let { dialog ->
                 if (dialog.isShow) {
                     dialog.dismiss()
                 }
             }
+        }
+
+    }
+}
+
+/**
+ * 请求结果
+ */
+internal fun <DATA : Any> requestResult(
+    result: RequestResult<DATA>,
+    error: (code: Int, message: String) -> Unit = { _: Int, _: String -> },
+    success: (DATA) -> Unit = {}
+) {
+    when (result) {
+        is RequestResult.Success -> {
+            Log.e("UIRequestEx", "Success  ${Thread.currentThread().name}")
+            success.invoke(result.data)
+        }
+        is RequestResult.Failure -> {
+            Log.e("UIRequestEx", "Failure result${result}   ${Thread.currentThread().name}")
+            error.invoke(result.code, result.message)
+        }
+        is RequestResult.Cancel -> {
+            Log.e("UIRequestEx", "Cancel  ${Thread.currentThread().name}")
         }
     }
 }
