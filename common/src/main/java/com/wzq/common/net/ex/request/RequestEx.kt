@@ -22,7 +22,6 @@ internal fun <DATA> request(
     return coroutineScope.launch(Dispatchers.IO) {
         Log.e("RequestEx", "onStart   ${Thread.currentThread().name}")
         runCatching {
-            delay(10_000)
             block.invoke()
         }.mapCatching {
             if (it.isSuccess()) it.result else throw ApiException(it.code, it.message)
