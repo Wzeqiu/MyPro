@@ -115,7 +115,6 @@ internal fun <DATA : Any> hasCancelRequest(
                 }
             }
         }
-
     }
 }
 

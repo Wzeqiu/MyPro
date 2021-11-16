@@ -17,15 +17,22 @@ import kotlinx.coroutines.Job
 
 class MainActivity : BaseVBActivity<ActivityMainBinding>(ActivityMainBinding::inflate) {
     val datas = mutableListOf<MultiItemEntity>()
+    var job: Job? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setTitleBarTitle("")
 
         viewBinding.tvContent.isVisible = true
         viewBinding.tvContent.setSingleOnClickListener {
-            request({ netServer.test() }, isShowDialog = true) {
-                startActivity(MvvmActivity::class.java)
+            job = if (job!=null){
+                job!!.cancel()
+                null
+            }else{
+                request({ netServer.test() }, isShowDialog = true) {
+                    startActivity(MvvmActivity::class.java)
+                }
             }
+
         }
 
 

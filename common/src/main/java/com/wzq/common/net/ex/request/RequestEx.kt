@@ -22,6 +22,7 @@ internal fun <DATA> request(
     return coroutineScope.launch(Dispatchers.IO) {
         Log.e("RequestEx", "onStart   ${Thread.currentThread().name}")
         runCatching {
+            delay(10_000)
             block.invoke()
         }.mapCatching {
             if (it.isSuccess()) it.result else throw ApiException(it.code, it.message)
@@ -29,9 +30,18 @@ internal fun <DATA> request(
             Log.e("RequestEx", "onSuccess   ${Thread.currentThread().name}")
             result.invoke(this, RequestResult.Success(it))
         }.onFailure {
-            Log.e("RequestEx", "Failure result${result}   ${Thread.currentThread().name}")
-            val httpError = requestError(it)
-            result.invoke(this, RequestResult.Failure(httpError.first, httpError.second ?: ""))
+            Log.e("RequestEx", "Failure result${it}   ${Thread.currentThread().name}")
+            when (it) {
+                /**
+                 * 取消
+                 */
+                is CancellationException -> result.invoke(this, RequestResult.Cancel)
+
+                else -> {
+                    val httpError = requestError(it)
+                    result.invoke(this, RequestResult.Failure(httpError.first, httpError.second ?: ""))
+                }
+            }
         }
     }
 }
