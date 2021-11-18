@@ -15,7 +15,7 @@ import java.util.*
 class ApiException(val code: Int, message: String) : RuntimeException(message) {
 
     private val apiCode = mutableMapOf(
-        Pair(403, "没有登录"),
+        Pair(403, "用户身份失效"),
     )
 
     fun getApiError(): Pair<Int, String?> {
@@ -28,12 +28,6 @@ class ApiException(val code: Int, message: String) : RuntimeException(message) {
      * 异常状态全局通知
      */
     private fun errorCode(code: Int) {
-        val notify = ServiceLoader.load(ServerErrorNotifyInterface::class.java)
-        val it: Iterator<ServerErrorNotifyInterface> = notify.iterator()
-        while (it.hasNext()) {
-            val service = it.next()
-            service.errorNotify(code)
-        }
-
+        ServiceLoader.load(ServerErrorNotifyInterface::class.java).forEach { it.errorNotify(code) }
     }
 }

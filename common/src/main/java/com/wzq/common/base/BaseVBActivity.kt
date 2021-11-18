@@ -14,7 +14,7 @@ import com.wzq.common.utils.ActivityStackManager
  * Version: 1.0
  * Description: java类作用描述
  */
-abstract class BaseVBActivity<VB : ViewBinding>(private val inflate: (inflate: LayoutInflater) -> VB) : AppCompatActivity() {
+open class BaseVBActivity<VB : ViewBinding>(private val inflate: (inflate: LayoutInflater) -> VB) : AppCompatActivity() {
     protected lateinit var viewBinding: VB
     override fun onCreate(savedInstanceState: Bundle?) {
         ActivityStackManager.getInstance().onActivityCreated(this)
