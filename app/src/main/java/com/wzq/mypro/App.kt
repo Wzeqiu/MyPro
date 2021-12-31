@@ -1,6 +1,9 @@
 package com.wzq.mypro
 
 import android.app.Application
+import com.blankj.utilcode.util.Utils
+import com.jeremyliao.liveeventbus.LiveEventBus
+import com.jeremyliao.liveeventbus.logger.DefaultLogger
 import com.wzq.common.net.HttpRequest
 
 /**
@@ -14,10 +17,17 @@ class App : Application() {
     override fun onCreate() {
         super.onCreate()
 
+        Utils.getApp()
+
         HttpRequest.Builder()
             .setBaseUrl("https://api.apiopen.top/")
             .setDebug(true)
             .build()
+
+        LiveEventBus.config()
+            .setContext(this)
+            .enableLogger(true)
+            .setLogger(DefaultLogger())
 
     }
 }

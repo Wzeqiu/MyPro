@@ -34,9 +34,6 @@ android {
         viewBinding true
     }
 
-    dataBinding {
-        enabled = true
-    }
 }
 
 dependencies {
@@ -49,25 +46,34 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 
 
-    // ktx
-    api "androidx.activity:activity-ktx:1.2.3"
-    api "androidx.fragment:fragment-ktx:1.3.4"
+    //  ktx
+    api "androidx.activity:activity-ktx:1.2.4"
+    api "androidx.fragment:fragment-ktx:1.3.6"
 
-    // retrofit
+    //  retrofit
     api 'com.squareup.retrofit2:retrofit:2.9.0'
     api 'com.squareup.retrofit2:converter-gson:2.9.0'
     api 'com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.2'
 
 
-    // auto service
-    api 'com.google.auto.service:auto-service:1.0-rc7'
-    annotationProcessor 'com.google.auto.service:auto-service:1.0-rc7'
+    //  auto service
+    api 'com.google.auto.service:auto-service:1.0.1'
+    annotationProcessor 'com.google.auto.service:auto-service:1.0.1'
 
-    // xpopup
+    //  xpopup
     api 'com.lxj:xpopup:2.2.23'
 
-    //
+    //  RecyclerView
     api 'com.github.CymChad:BaseRecyclerViewAdapterHelper:3.0.4'
+
+    //  消息总线
+    api 'io.github.jeremyliao:live-event-bus-x:1.8.0'
+
+    //  工具类
+    api 'com.blankj:utilcodex:1.30.6'
+
+    //  微信MMKV
+    api 'com.tencent:mmkv:1.2.11'
 
 
 }

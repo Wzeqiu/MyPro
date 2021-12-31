@@ -1,11 +1,13 @@
 package com.wzq.mypro
 
 import android.os.Bundle
+import android.util.Log
 import androidx.core.view.isVisible
 import com.chad.library.adapter.base.entity.MultiItemEntity
 import com.wzq.common.base.BaseVBActivity
 import com.wzq.common.base.adapter.*
 import com.wzq.common.net.ex.request.request
+import com.wzq.common.utils.eventBusObserver
 import com.wzq.common.utils.setSingleOnClickListener
 import com.wzq.common.utils.setTitleBarTitle
 import com.wzq.common.utils.startActivity
@@ -21,15 +23,27 @@ class MainActivity : BaseVBActivity<ActivityMainBinding>(ActivityMainBinding::in
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setTitleBarTitle("")
+        eventBusObserver(String::class.java) {
 
+            Log.e("data", "eventBusObserver is $it")
+        }
+        eventBusObserver(Integer::class.java) {
+
+            Log.e("data", "eventBusObserver is $it")
+        }
+        eventBusObserver(Integer::class.java) {
+
+            Log.e("data", "eventBusObserver is $it")
+        }
         viewBinding.tvContent.isVisible = true
         viewBinding.tvContent.setSingleOnClickListener {
-            job = if (job!=null){
+            job = if (job != null) {
                 job!!.cancel()
                 null
-            }else{
+            } else {
+
                 request({ netServer.test() }, isShowDialog = true) {
-                    startActivity(MvvmActivity::class.java)
+                    startActivity(TwoActivity::class.java)
                 }
             }
 
