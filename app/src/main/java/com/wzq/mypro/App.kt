@@ -20,7 +20,7 @@ class App : Application() {
         Utils.getApp()
 
         HttpRequest.Builder()
-            .setBaseUrl("https://api.apiopen.top/")
+            .setBaseUrl("http://47.108.138.222:8085")
             .setDebug(true)
             .build()
 

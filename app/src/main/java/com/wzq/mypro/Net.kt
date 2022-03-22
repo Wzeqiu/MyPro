@@ -16,6 +16,6 @@ val netServer: Net by lazy { HttpRequest.createServer(Net::class.java) }
 
 @JvmSuppressWildcards
 interface Net {
-    @GET("getJoke?page=1&count=2&type=video")
+    @GET("/virtualcurrency/config")
     suspend fun test(): BaseResponse<List<Any>>
 }

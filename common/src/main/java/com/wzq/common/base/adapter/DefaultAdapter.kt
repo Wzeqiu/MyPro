@@ -1,6 +1,7 @@
 package com.wzq.common.base.adapter
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.viewbinding.ViewBinding
 import com.chad.library.adapter.base.BaseMultiItemQuickAdapter
@@ -43,21 +44,21 @@ open class DefaultAdapter<T, VB : ViewBinding>(
  */
 fun <T, VB : ViewBinding> initDefaultAdapter(
     inflate: (inflater: LayoutInflater, container: ViewGroup?, attachToRoot: Boolean) -> VB,
-    block: DefaultAdapter<T, VB>.() -> Unit = { }
-) = DefaultAdapter<T, VB>(inflate).apply {
-    block.invoke(this)
-}
+    block: VB.(T) -> Unit = { }
+) = DefaultAdapter(inflate, block)
 
+open class MultiItem<T>(override val  itemType: Int, open val data: T) : MultiItemEntity
 
-class ViewBingPair<T : MultiItemEntity, VB : ViewBinding>(
+class ViewBingPair<T, VB : ViewBinding>(
     val inflate: (inflater: LayoutInflater, container: ViewGroup?, attachToRoot: Boolean) -> VB,
     val block: VB.(T) -> Unit = {}
 )
 
-open class DefaultMultiAdapter : BaseMultiItemQuickAdapter<MultiItemEntity, BaseHolder<ViewBinding>>() {
-    private var viewBindings: HashMap<Int, ViewBingPair<MultiItemEntity, ViewBinding>> = HashMap()
 
-    open fun <T : MultiItemEntity, VB : ViewBinding> addItemLayout(
+open class DefaultMultiAdapter : BaseMultiItemQuickAdapter<MultiItem<Any>, BaseViewHolder>() {
+    private var viewBindings: HashMap<Int, ViewBingPair<Any, ViewBinding>> = HashMap()
+
+    open fun <T, VB : ViewBinding> addItemLayout(
         type: Int,
         inflate: (inflater: LayoutInflater, container: ViewGroup?, attachToRoot: Boolean) -> VB,
         block: VB.(T) -> Unit = {}
@@ -66,14 +67,14 @@ open class DefaultMultiAdapter : BaseMultiItemQuickAdapter<MultiItemEntity, Base
         viewBindings[type] = ViewBingPair(inflate, block as ViewBinding.(Any) -> Unit)
     }
 
-    override fun onCreateDefViewHolder(parent: ViewGroup, viewType: Int): BaseHolder<ViewBinding> {
+    override fun onCreateDefViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
         val pair = viewBindings[viewType]
-        val viewBinding = pair?.inflate?.invoke(LayoutInflater.from(parent.context), parent, false)
-        return BaseHolder(viewBinding!!)
+        val viewBinding = pair?.inflate?.invoke(LayoutInflater.from(parent.context), parent, false) ?: return BaseViewHolder(View(parent.context))
+        return BaseHolder(viewBinding)
     }
 
-    override fun convert(holder: BaseHolder<ViewBinding>, item: MultiItemEntity) {
-        viewBindings[holder.itemViewType]?.block?.invoke(holder.viewBinding, item)
+    override fun convert(holder: BaseViewHolder, item: MultiItem<Any>) {
+        viewBindings[holder.itemViewType]?.block?.invoke((holder as BaseHolder<*>).viewBinding, item.data)
     }
 }
 
@@ -85,8 +86,5 @@ fun initDefaultMultiAdapter(
 ) = DefaultMultiAdapter().apply {
     block.invoke(this)
 }
-
-
-open class MultiItem<DATA>(override val itemType: Int, val data: DATA) : MultiItemEntity
 
 

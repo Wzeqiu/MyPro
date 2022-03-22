@@ -7,18 +7,14 @@ import com.chad.library.adapter.base.entity.MultiItemEntity
 import com.wzq.common.base.BaseVBActivity
 import com.wzq.common.base.adapter.*
 import com.wzq.common.net.ex.request.request
-import com.wzq.common.utils.eventBusObserver
-import com.wzq.common.utils.setSingleOnClickListener
-import com.wzq.common.utils.setTitleBarTitle
-import com.wzq.common.utils.startActivity
+import com.wzq.common.utils.*
 import com.wzq.mypro.databinding.ActivityMainBinding
 import com.wzq.mypro.databinding.ItemAdapterBinding
 import com.wzq.mypro.databinding.ItemAdapterTwoBinding
-import com.wzq.mypro.mvvm.MvvmActivity
 import kotlinx.coroutines.Job
 
 class MainActivity : BaseVBActivity<ActivityMainBinding>(ActivityMainBinding::inflate) {
-    val datas = mutableListOf<MultiItemEntity>()
+    val datas = mutableListOf<MultiItem<Any>>()
     var job: Job? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,24 +43,21 @@ class MainActivity : BaseVBActivity<ActivityMainBinding>(ActivityMainBinding::in
                 }
             }
 
-        }
+        }.onClickUp()
+        viewBinding.lin.onClickUp()
 
 
         val adapter = initDefaultAdapter<String, ItemAdapterBinding>(ItemAdapterBinding::inflate) {
-            setItemLayout {
-                tvName.text = it
-            }
-            setOnItemClickListener { adapter, view, position ->
-            }
+            tvName.text = it
         }
 
         val adapter1 = initDefaultMultiAdapter {
-            addItemLayout<MultiItem<String>, ItemAdapterBinding>(0, ItemAdapterBinding::inflate) {
-                tvName.text = it.data
+            addItemLayout<String, ItemAdapterBinding>(0, ItemAdapterBinding::inflate) {
+                tvName.text = it
             }
 
-            addItemLayout<MultiItem<Int>, ItemAdapterTwoBinding>(1, ItemAdapterTwoBinding::inflate) {
-                tvName.text = it.data.toString()
+            addItemLayout<Int, ItemAdapterTwoBinding>(1, ItemAdapterTwoBinding::inflate) {
+                tvName.text = it.toString()
             }
         }
 
@@ -72,7 +65,7 @@ class MainActivity : BaseVBActivity<ActivityMainBinding>(ActivityMainBinding::in
             datas.add(MultiItem(0, i.toString()))
             datas.add(MultiItem(1, i * 10))
         }
-        adapter1.setList(datas)
+        adapter1.setNewInstance(datas)
         viewBinding.rv.adapter = adapter1
     }
 }

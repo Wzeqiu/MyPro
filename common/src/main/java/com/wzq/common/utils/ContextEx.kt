@@ -8,6 +8,8 @@ import android.view.View
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
+import com.wzq.common.base.BaseVBActivity
+import java.lang.reflect.ParameterizedType
 
 /**
  *
@@ -44,3 +46,5 @@ fun Context.context2Activity(): FragmentActivity? {
     }
     return null
 }
+
+
