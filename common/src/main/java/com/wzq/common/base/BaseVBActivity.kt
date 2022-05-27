@@ -1,9 +1,9 @@
 package com.wzq.common.base
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import androidx.appcompat.app.AppCompatActivity
 import androidx.viewbinding.ViewBinding
+import com.wzq.common.utils.reflectInflate
 
 /**
  *
@@ -12,11 +12,12 @@ import androidx.viewbinding.ViewBinding
  * Version: 1.0
  * Description: java类作用描述
  */
-open class BaseVBActivity<VB : ViewBinding>(private val inflate: (inflate: LayoutInflater) -> VB) : AppCompatActivity() {
+open class BaseVBActivity<VB : ViewBinding> : AppCompatActivity() {
     protected lateinit var viewBinding: VB
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewBinding = inflate(layoutInflater)
+        viewBinding = reflectInflate(0,layoutInflater)
         setContentView(viewBinding.root)
     }
+
 }

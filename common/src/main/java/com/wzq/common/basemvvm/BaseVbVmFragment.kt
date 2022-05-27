@@ -17,9 +17,8 @@ import com.wzq.common.base.BaseVBFragment
  * Description: java类作用描述
  */
 class BaseVbVmFragment<VB : ViewBinding, VM : ViewModel>(
-    inflate: (inflater: LayoutInflater, container: ViewGroup?, attachToRoot: Boolean) -> VB,
     private val vmClass: Class<VM>
-) : BaseVBFragment<VB>(inflate) {
+) : BaseVBFragment<VB>() {
     protected lateinit var viewModel: VM
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         viewModel = ViewModelProvider(this).get(vmClass)

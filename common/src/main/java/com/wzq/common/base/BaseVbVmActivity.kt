@@ -14,9 +14,8 @@ import androidx.viewbinding.ViewBinding
  * Description: java类作用描述
  */
 internal abstract class BaseVbVmActivity<VB : ViewBinding, VM : ViewModel>(
-    inflate: (inflate: LayoutInflater) -> VB,
     private val vmClass: Class<VM>
-) : BaseVBActivity<VB>(inflate) {
+) : BaseVBActivity<VB>() {
 
     protected lateinit var viewModel: VM
 

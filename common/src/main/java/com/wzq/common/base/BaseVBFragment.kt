@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.viewbinding.ViewBinding
+import com.wzq.common.utils.reflectInflate
 
 /**
  *
@@ -14,11 +15,11 @@ import androidx.viewbinding.ViewBinding
  * Version: 1.0
  * Description: java类作用描述
  */
-open class BaseVBFragment<VB : ViewBinding>(private val inflate: (inflater: LayoutInflater, container: ViewGroup?, attachToRoot: Boolean) -> VB) :
+open class BaseVBFragment<VB : ViewBinding> :
     Fragment() {
     protected lateinit var viewBinding: VB
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        viewBinding = inflate(inflater, container, false)
+        viewBinding = reflectInflate(0,inflater, container, false)
         return viewBinding.root
     }
 

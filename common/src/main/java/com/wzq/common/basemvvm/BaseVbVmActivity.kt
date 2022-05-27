@@ -14,9 +14,8 @@ import com.wzq.common.base.BaseVBActivity
  * Description: java类作用描述
  */
 abstract class BaseVbVmActivity<VB : ViewBinding, VM : BaseViewModel>(
-    inflate: (inflate: LayoutInflater) -> VB,
     private val vmClass: Class<VM>? = null
-) : BaseVBActivity<VB>(inflate) {
+) : BaseVBActivity<VB>() {
 
     protected var viewModel: VM? = null
 

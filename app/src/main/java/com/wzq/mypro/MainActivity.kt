@@ -2,8 +2,8 @@ package com.wzq.mypro
 
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import androidx.core.view.isVisible
-import com.chad.library.adapter.base.entity.MultiItemEntity
 import com.wzq.common.base.BaseVBActivity
 import com.wzq.common.base.adapter.*
 import com.wzq.common.net.ex.request.request
@@ -13,7 +13,7 @@ import com.wzq.mypro.databinding.ItemAdapterBinding
 import com.wzq.mypro.databinding.ItemAdapterTwoBinding
 import kotlinx.coroutines.Job
 
-class MainActivity : BaseVBActivity<ActivityMainBinding>(ActivityMainBinding::inflate) {
+class MainActivity : BaseVBActivity<ActivityMainBinding>() {
     val datas = mutableListOf<MultiItem<Any>>()
     var job: Job? = null
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,7 +47,7 @@ class MainActivity : BaseVBActivity<ActivityMainBinding>(ActivityMainBinding::in
         viewBinding.lin.onClickUp()
 
 
-        val adapter = initDefaultAdapter<String, ItemAdapterBinding>(ItemAdapterBinding::inflate) {
+        val adapter = initDefaultAdapter<String, ItemAdapterBinding> {
             tvName.text = it
         }
 
@@ -70,12 +70,18 @@ class MainActivity : BaseVBActivity<ActivityMainBinding>(ActivityMainBinding::in
     }
 }
 
-class MyAdapter : DefaultAdapter<String, ItemAdapterBinding>(ItemAdapterBinding::inflate) {
-    init {
-        setItemLayout {
-            tvName.text = it
-        }
+class MyAdapter : DefaultAdapter<String, ItemAdapterBinding>({
+    tvName.text = it
+}) {
+    override fun setOnItemClick(v: View, position: Int) {
+        super.setOnItemClick(v, position)
     }
+
+    override fun setList(list: Collection<String>?) {
+        super.setList(list)
+    }
+
+
 }
 
 
