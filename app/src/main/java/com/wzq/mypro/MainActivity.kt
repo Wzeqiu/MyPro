@@ -52,11 +52,11 @@ class MainActivity : BaseVBActivity<ActivityMainBinding>() {
         }
 
         val adapter1 = initDefaultMultiAdapter {
-            addItemLayout<String, ItemAdapterBinding>(0, ItemAdapterBinding::inflate) {
+            addItemLayout<String, ItemAdapterBinding>(0) {
                 tvName.text = it
             }
 
-            addItemLayout<Int, ItemAdapterTwoBinding>(1, ItemAdapterTwoBinding::inflate) {
+            addItemLayout<Int, ItemAdapterTwoBinding>(1) {
                 tvName.text = it.toString()
             }
         }
@@ -87,11 +87,11 @@ class MyAdapter : DefaultAdapter<String, ItemAdapterBinding>({
 
 class MyBaseAdapter : DefaultMultiAdapter() {
     init {
-        addItemLayout<MultiItem<String>, ItemAdapterBinding>(0, ItemAdapterBinding::inflate) {
+        addItemLayout<MultiItem<String>, ItemAdapterBinding>(0) {
             tvName.text = it.data
         }
 
-        addItemLayout<MultiItem<Int>, ItemAdapterTwoBinding>(1, ItemAdapterTwoBinding::inflate) {
+        addItemLayout<MultiItem<Int>, ItemAdapterTwoBinding>(1) {
             tvName.text = it.data.toString()
         }
     }
